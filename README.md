@@ -15,7 +15,7 @@ methodology, and findings once the eval harness has run. See
 ## Project status
 
 - [x] Phase 1 — ground-truth claim schema + seed batch (in review)
-- [ ] Phase 2 — tools (search, fetch, source credibility, claim comparison)
+- [x] Phase 2 — tools (search, fetch, source credibility, claim comparison)
 - [ ] Phase 3 — ReAct agent loop
 - [ ] Phase 4 — single-shot baseline
 - [ ] Phase 5 — eval harness + batched run, both arms
