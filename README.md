@@ -39,6 +39,28 @@ nothing with `reviewed: false` should be used for scoring.
 (`Crawl-delay: 10`) and is meant for small, occasional seed batches, not
 bulk harvesting.
 
+## Source credibility table
+
+`misinfo_agent/data/source_credibility.csv` (~485 domains) backs
+`tool_assess_source`'s credibility/bias/type lookup. The ratings were not
+independently derived — they were compiled from two publicly available
+rating resources, [Reality Team's credible sources
+list](https://realityteam.org/resources/credible-sources/) and [Ad Fontes
+Media's individual source rankings](https://adfontesmedia.com/rankings-by-individual-news-source/)
+(the free rankings page, not Ad Fontes' paid full dataset), then parsed
+into this project's schema with the help of an LLM. `credibility`
+(high/medium/low), `bias` (left/center/right), and `type` reflect those
+two organizations' own methodologies, not this project's independent
+editorial judgment.
+
+This is a deliberate scope trade-off for a portfolio project on a time
+budget, not the original Phase 1 plan (which called for fully manual
+curation to avoid exactly this kind of third-party-methodology
+dependency). Anyone extending this table with new domains should treat
+these two sources as reference material to weigh, not a canonical source
+of truth — and should check each site's terms before pulling further data
+in bulk.
+
 ## Development
 
 ```bash

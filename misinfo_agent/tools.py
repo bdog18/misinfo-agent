@@ -196,7 +196,8 @@ _COMPARE_TOOL = {
     "description": (
         "Record a structured judgment of whether a piece of source text "
         "supports, refutes, is irrelevant to, or offers mixed evidence "
-        "about a claim."
+        "about a claim, based strictly on what the text itself literally "
+        "states — not on outside knowledge about the source's reliability."
     ),
     "input_schema": {
         "type": "object",
@@ -259,7 +260,12 @@ def tool_compare_claim_to_text(claim: str, text: str) -> ComparisonResult:
     Returns
     -------
     A ComparisonResult with Haiku's stance, confidence, the quote it based
-    that stance on, and a short reasoning string.
+    that stance on, and a short reasoning string. Stance is judged strictly
+    from the literal content of `text` — Haiku is explicitly instructed to
+    ignore whatever it separately knows about the source's reliability or
+    reputation (that's tool_assess_source's job), so a text reporting a
+    since-debunked study's own claim should be judged by what that claim
+    asserts, not by outside knowledge of how it was later received.
 
     Raises
     ------
@@ -280,7 +286,19 @@ def tool_compare_claim_to_text(claim: str, text: str) -> ComparisonResult:
         messages=[
             {
                 "role": "user",
-                "content": f"Claim: {claim}\n\nSource text: {text}"
+                "content": (
+                    f"Claim: {claim}\n\n"
+                    f"Source text: {text}\n\n"
+                    "Judge stance based ONLY on what the source text above "
+                    "literally states — not on anything you separately know "
+                    "about the source's general reliability, reputation, or "
+                    "whether it was later validated or debunked. If the text "
+                    "reports that a study/person claimed something, judge "
+                    "the stance based on what is being reported, not on "
+                    "outside knowledge of how that claim was later received. "
+                    "Source reliability is judged by a different tool — your "
+                    "job here is purely: what does this text say?"
+                ),
             }
         ]
     )
@@ -291,24 +309,24 @@ def tool_compare_claim_to_text(claim: str, text: str) -> ComparisonResult:
 # tool_assess_source
 # ---------------------------------------------------------------------------
 
-# The credibility/bias table is a manually curated CSV (methodology
-# documented in the README), not scraped — see PROJECT_BRIEF.md decisions
-# log. Only cdc.gov and politifact.com are seeded as format examples;
-# building out the rest to ~50-100 domains is manual editorial work, same
-# as the claim set.
+# The credibility/bias table's methodology is documented in the README —
+# see the "Source credibility table" section for provenance and caveats.
 CREDIBILITY_TABLE_PATH = Path(__file__).resolve().parent / "data" / "source_credibility.csv"
 
 SourceType = Literal[
     "government",
     "academic",
     "fact-checker",
-    "mainstream-news",
+    "news",
+    "state-media",
+    "research",
+    "media-watchdog",
     "partisan-outlet",
     "blog",
     "satire",
     "unknown",
 ]
-Credibility = Literal["high", "mixed", "low", "unknown"]
+Credibility = Literal["high", "medium", "low", "unknown"]
 Bias = Literal["left", "center-left", "center", "center-right", "right", "unknown"]
 
 

@@ -1,3 +1,486 @@
 domain,name,type,credibility,bias
 cdc.gov,Centers for Disease Control and Prevention,government,high,center
 politifact.com,PolitiFact,fact-checker,high,center
+factcheck.org,FactCheck.org,fact-checker,high,center
+annenbergclassroom.org,FlackCheck,fact-checker,high,center
+snopes.com,Snopes,fact-checker,high,center
+truthorfiction.com,Truth or Fiction,fact-checker,high,center
+abcnews.go.com,ABC News,news,high,center
+reuters.com,Reuters,news,high,center
+apnews.com,Associated Press,news,high,center
+csmonitor.com,Christian Science Monitor,news,high,center
+pbs.org,PBS,news,high,center
+nytimes.com,New York Times,news,high,left
+npr.org,NPR,news,high,left
+washingtonpost.com,Washington Post,news,high,left
+cnn.com,CNN,news,high,left
+wsj.com,Wall Street Journal,news,high,right
+economist.com,The Economist,news,high,right
+ft.com,Financial Times,news,high,right
+aljazeera.com,Al Jazeera,news,high,left
+axios.com,Axios,news,high,center
+bbc.com,BBC,news,high,center
+buzzfeednews.com,BuzzFeed News,news,high,left
+cbsnews.com,CBS News,news,high,left
+chicagotribune.com,Chicago Tribune,news,high,left
+christianitytoday.com,Christianity Today,news,high,center
+cnbc.com,CNBC,news,high,center
+denverpost.com,Denver Post,news,high,left
+firstdraftnews.org,First Draft News,fact-checker,high,center
+thefiscaltimes.com,Fiscal Times,news,high,center
+fivethirtyeight.com,Five Thirty Eight,news,high,center
+foreignaffairs.com,Foreign Affairs,news,high,center
+foreignpolicy.com,Foreign Policy,news,high,center
+fortune.com,Fortune,news,high,center
+hbr.org,Harvard Business Review,news,high,center
+houstonchronicle.com,Houston Chronicle,news,high,left
+jacobinmag.com,Jacobin,news,high,left
+latimes.com,Los Angeles Times,news,high,left
+marketwatch.com,MarketWatch,news,high,center
+militarytimes.com,Military Times,news,high,center
+motherjones.com,Mother Jones,news,high,left
+nationalreview.com,National Review,news,high,right
+newsy.com,Newsy,news,high,center
+ozy.com,OZY,news,high,center
+pewresearch.org,Pew Research,research,high,center
+politico.com,Politico,news,high,left
+poynter.org,Poynter,media-watchdog,high,center
+propublica.org,ProPublica,news,high,left
+rand.org,Rand Corporation,research,high,center
+reason.com,Reason,news,high,right
+rollcall.com,Roll Call,news,high,center
+slate.com,Slate,news,high,left
+theatlantic.com,The Atlantic,news,high,left
+theconversation.com,The Conversation,news,high,left
+theguardian.com,The Guardian,news,high,left
+huffpost.com,The Huffington Post,news,high,left
+newyorker.com,The New Yorker,news,high,left
+weather.com,The Weather Channel,news,high,center
+time.com,Time,news,high,left
+usatoday.com,USA Today,news,high,center
+vice.com,Vice Media,news,high,left
+warontherocks.com,War On The Rocks,news,high,center
+vox.com,Vox,news,high,left
+rt.com,Russia Today (RT),state-media,low,right
+sputniknews.com,Sputnik,state-media,low,right
+amgreatness.com,American Greatness,news,low,right
+redstate.com,Red State,news,low,right
+redstatewatcher.com,Red State Watcher,news,low,right
+dcclothesline.com,DC Clothesline,news,low,right
+dcdirtylaundry.com,DC Dirty Laundry,news,low,right
+breitbart.com,Breitbart,news,low,right
+theepochtimes.com,Epoch Times,news,low,right
+thegatewaypundit.com,Gateway Pundit,news,low,right
+zerohedge.com,Zero Hedge,news,low,right
+bigleaguepolitics.com,Big League Politics,news,low,right
+activistpost.com,Activist Post,news,low,right
+westernjournal.com,Western Journal,news,low,right
+intellihub.com,Intellihub,news,low,right
+infowars.com,Infowars,news,low,right
+wnd.com,WorldNetDaily (WND),news,low,right
+worldtruth.tv,World Truth.TV,news,low,right
+21stcenturywire.com,21st Century Wire,news,low,right
+thefederalist.com,The Federalist,news,low,right
+19thnews.org,19th News,news,medium,left
+advocate.com,Advocate Magazine,news,high,left
+airforcetimes.com,Air Force Times,news,high,center
+ajc.com,Atlanta Journal-Constitution,news,high,center
+al.com,AL.com,news,high,center
+alternet.org,AlterNet,news,medium,left
+americanthinker.com,American Thinker,news,low,right
+aol.com,AOL,news,high,center
+arkansasonline.com,Arkansas Democrat-Gazette,news,high,center
+armchairexpertpod.com,Armchair Expert with Dax Shepard,news,high,left
+armytimes.com,Army Times,news,high,center
+arstechnica.com,ARS Technica,news,high,center
+aspentimes.com,Aspen Times,news,high,center
+atlantablackstar.com,Atlanta Black Star,news,high,center
+azcentral.com,AZ Central,news,high,left
+baltimoresun.com,Baltimore Sun,news,high,center
+barrons.com,Barron's,news,high,center
+bbc.co.uk,BBC World News America,news,high,center
+bearingarms.com,Bearing Arms,news,medium,right
+beforeitsnews.com,Before It's News,news,low,right
+bellingcat.com,Bellingcat,news,high,center
+benzinga.com,Benzinga,news,high,center
+bet.com,BET,news,high,center
+bgr.com,BGR,news,high,center
+bigleaguepolitics.substack.com,Big League Politics | Substack,news,low,right
+billboard.com,Billboard,news,high,center
+billoreilly.com,Bill O'Reilly,news,medium,right
+bipartisanreport.com,Bipartisan Report,news,medium,left
+bitchmedia.org,Bitch Media,news,medium,left
+bizpacreview.com,BizPac Review,news,low,right
+blacksportsonline.com,BlackSportsOnline,news,medium,left
+bloomberg.com,Bloomberg News,news,high,center
+bnonews.com,BNO News,news,high,center
+boingboing.net,Boing Boing,news,low,left
+bostonglobe.com,Boston Globe,news,high,left
+bostonherald.com,Boston Herald,news,high,right
+bringmethenews.com,Bring Me The News,news,high,center
+brobible.com,BroBible,news,low,center
+brookings.edu,Brookings Institution,news,high,center
+businessinsider.com,Business Insider,news,high,center
+c-span.org,C-SPAN Live Stream,news,high,center
+capitolweekly.net,Capitol Weekly,news,high,center
+cato.org,Cato Institute,news,high,center
+cbc.ca,CBC Canada,news,high,center
+cbn.com,CBN | Christian Broadcasting Network,news,medium,right
+cbs.com,CBS,news,high,left
+cfo.com,CFO,news,high,center
+chicksonright.com,Chicks On The Right,news,low,right
+chron.com,Chron.com,news,high,center
+cjr.org,Columbia Journalism Review,news,high,left
+cleveland.com,Cleveland.com,news,high,center
+cnet.com,CNET,news,high,center
+cnsnews.com,CNSNews,news,medium,right
+coloradodaily.com,Colorado Daily,news,high,center
+comicsands.com,Comic Sands,news,medium,left
+commondreams.org,Common Dreams,news,high,left
+conservativereview.com,Conservative Review,news,medium,right
+cosmopolitan.com,Cosmopolitan,news,medium,left
+counterpunch.org,CounterPunch,news,low,left
+crooked.com,Crooked Media,news,medium,left
+crooksandliars.com,Crooks and Liars,news,low,left
+currentaffairs.org,Current Affairs,news,medium,left
+dailycaller.com,Daily Caller,news,medium,right
+dailydot.com,Daily Dot,news,medium,left
+dailyherald.com,Daily Herald-Chicago,news,high,center
+dailykos.com,Daily Kos,news,medium,left
+dailymail.com,Daily Mail,news,medium,center
+dailytorch.com,Daily Torch,news,low,right
+dailywire.com,Daily Wire,news,medium,right
+data.fivethirtyeight.com,FiveThirtyEight,news,high,left
+deadline.com,Deadline,news,high,center
+deadspin.com,Deadspin,news,medium,left
+defensenews.com,Defense News,news,high,center
+democracynow.org,Democracy Now!,news,medium,left
+deseret.com,Deseret News,news,high,center
+dividedwefall.org,Divided We Fall,news,high,center
+edition.cnn.com,CNN International,news,high,center
+edweek.org,Education Week,news,high,center
+elitedaily.com,Elite Daily,news,medium,left
+elle.com,Elle,news,high,left
+engadget.com,Engadget,news,high,center
+eonline.com,E! News,news,high,center
+epi.org,Economic Policy Institute,news,high,left
+esquire.com,Esquire,news,medium,left
+etonline.com,ET Online,news,high,center
+ew.com,Entertainment Weekly,news,high,center
+fair.org,FAIR,news,medium,left
+fairobserver.com,Fair Observer,news,high,left
+fastcompany.com,Fast Company,news,high,left
+forbes.com,Forbes,news,high,center
+forward.com,Forward,news,high,left
+fox.com,Fox Broadcast Network,news,high,right
+foxbusiness.com,Fox Business,news,medium,right
+foxnews.com,Fox News,news,medium,right
+frangela.com,Frangela,news,low,left
+freakonomics.com,Freakonomics Radio,news,high,left
+freep.com,Detroit Free Press,news,high,center
+frontpagemag.com,FrontPage Mag,news,low,right
+fullmeasure.news,Full Measure (Sinclair),news,high,right
+lastpodcastnetwork.com,Last Podcast Network,news,medium,left
+listen.warroom.org,Bannon's War Room,news,low,right
+ms.now,MS NOW,news,medium,left
+msnbc.com,MSNBC,news,medium,left
+nation.foxnews.com,Fox Nation,news,low,right
+news.bgov.com,Bloomberg Government,news,high,center
+newsmaxtv.com,Newsmax,news,low,right
+newsnationnow.com,NewsNation,news,medium,center
+radio.foxnews.com,Fox News Radio,news,medium,right
+suntimes.com,Chicago Sun-Times,news,high,center
+tbs.com,TBS,news,medium,left
+thedsrnetwork.com,Deep State Radio,news,high,center
+theintercept.com,The Intercept,news,medium,left
+tucson.com,Arizona Daily Star,news,high,center
+wvgazettemail.com,Charleston Gazette-Mail,news,high,center
+abc.com,ABC,news,high,left
+abcaudio.com,Start Here,news,high,center
+aei.org,What The Hell is Going On?,news,medium,right
+alfranken.com,The Al Franken Podcast,news,medium,left
+audacy.com,The Daily Punch,news,high,center
+bizjournals.com,The Business Journals,news,high,center
+blazetv.com,Blaze TV,news,low,right
+bongino.com,The Dan Bongino Show,news,low,right
+briantylercohen.com,No Lie with Brian Tyler Cohen,news,medium,left
+cafe.com,Stay Tuned with Preet - Preet Bharara,news,high,left
+cfr.org,Why It Matters,news,high,center
+charliekirk.com,The Charlie Kirk Show,news,low,right
+christianpost.com,The Christian Post,news,high,right
+courant.com,Hartford Courant,news,high,center
+dailybeanspod.com,The Daily Beans - Allison Gill & Dana Goldberg,news,medium,left
+dailysignal.com,The Daily Signal,news,low,right
+davidpakman.com,The David Pakman Show,news,medium,left
+detroitnews.com,The Detroit News,news,high,center
+devilmaycaremedia.com,The Megyn Kelly Show,news,medium,right
+devinnunes.com,The Devin Nunes Podcast,news,medium,right
+dineshdsouza.com,The Dinesh D'Souza Podcast,news,low,right
+fool.com,The Motley Fool,news,high,center
+frankspeech.com,Lindell TV,news,low,right
+freebeacon.com,The Washington Free Beacon,news,medium,right
+gasdigitalnetwork.com,Part of the Problem,news,low,right
+gingrich360.com,Newt's World,news,medium,right
+glamour.com,Glamour,news,high,left
+glennbeck.com,Glenn Beck,news,low,right
+globalnews.ca,Global News,news,high,center
+goodmorningamerica.com,ABC: Good Morning America,news,high,center
+goodnewsnetwork.org,Good News Network,news,high,center
+gq.com,GQ - US,news,medium,left
+greenwald.substack.com,Glenn Greenwald,news,high,center
+hardfactor.com,Hard Factor,news,low,center
+harpersbazaar.com,Harper's Bazaar,news,high,left
+hawaiinewsnow.com,Hawaii News Now,news,high,center
+hbo.com,HBO,news,medium,left
+hcn.org,High Country News,news,high,left
+heavy.com,Heavy,news,high,center
+hillreporter.com,Hill Reporter,news,medium,left
+holypost.com,The Holy Post Podcast,news,medium,left
+hoover.org,Hoover Institution,news,high,center
+hotair.com,HotAir,news,low,right
+ibtimes.com,International Business Times,news,high,center
+ijr.com,Independent Journal Review | IJR,news,low,right
+independent.co.uk,The Independent,news,high,left
+indystar.com,IndyStar | Indianapolis Star,news,high,center
+inquirer.com,Philadelphia Inquirer,news,high,left
+inquisitr.com,Inquisitr,news,medium,left
+insideclimatenews.org,Inside Climate News,news,high,left
+jacobin.com,Jacobin,news,medium,left
+jezebel.com,Jezebel,news,medium,left
+jimmydore.com,The Jimmy Dore Show,news,low,left
+jsonline.com,Milwaukee Journal Sentinel,news,high,left
+judicialwatch.org,Judicial Watch,news,low,right
+junkee.com,Junkee,news,high,left
+justthenews.com,Just the News,news,low,right
+kansascity.com,The Kansas City Star,news,high,center
+kcrw.com,"Left, Right & Center",news,high,center
+laconiadailysun.com,Laconia Daily Sun,news,high,center
+lawandcrime.com,Law and Crime,news,high,center
+laweekly.com,LA Weekly,news,high,center
+lawfareblog.com,The Lawfare Podcast,news,high,center
+lawfaremedia.org,Rational Security,news,high,left
+legion.org,The American Legion,news,high,center
+lemonadamedia.com,In the Bubble with Andy Slavitt,news,high,left
+lexfridman.com,Lex Fridman Podcast,news,medium,center
+libertynation.com,Liberty Nation,news,low,right
+lifenews.com,Life News,news,low,right
+lifesitenews.com,Lifesite News,news,low,right
+lifezette.com,LifeZette,news,low,right
+lincolnproject.us,The Lincoln Project Podcast,news,medium,left
+louderwithcrowder.com,Louder With Crowder,news,low,right
+majorityreportradio.com,The Majority Report with Sam Seder,news,medium,left
+marinecorpstimes.com,Marine Corps Times,news,high,center
+marketplace.org,Marketplace,news,high,center
+marklevinshow.com,The Mark Levin Show,news,low,right
+mashable.com,Mashable,news,high,left
+mediaite.com,Mediaite,news,medium,left
+mediamatters.org,Media Matters for America,news,medium,left
+meidasnews.com,MeidasTouch News,news,low,left
+meidastouch.com,The MeidasTouch Podcast,news,medium,left
+mercurynews.com,Mercury News,news,high,center
+miamiherald.com,Miami Herald,news,high,left
+mic.com,Mic,news,medium,left
+michaelmoore.com,The Michael Moore Podcast,news,medium,left
+michaelsavage.com,The Michael Savage Show,news,low,right
+mikepesca.com,The Gist,news,medium,left
+mintpressnews.com,MintPress News,news,medium,left
+mirror.co.uk,Mirror - UK,news,medium,center
+moaa.org,Military Officers Association of America - MOAA,news,high,center
+monocle.com,The Briefing,news,high,left
+montanafreepress.org,Montana Free Press,news,high,center
+morningbrew.com,Morning Brew,news,high,center
+msmagazine.com,Ms. Magazine,news,high,left
+mswmedia.com,"Mueller, She Wrote - Allison Gill",news,medium,left
+nasdaq.com,Nasdaq,news,medium,center
+nationalenquirer.com,National Enquirer,news,low,center
+nationalfile.com,National File,news,low,right
+naturalnews.com,Natural News,news,low,right
+nature.com,Nature,news,high,center
+navytimes.com,Navy Times,news,high,center
+nbc.com,NBC,news,medium,left
+nbcnews.com,NBC News,news,high,center
+ncregister.com,National Catholic Register,news,medium,right
+newrepublic.com,New Republic,news,medium,left
+news.sky.com,Sky News,news,high,center
+newsandguts.com,News and Guts,news,high,left
+newsbusters.org,NewsBusters,news,low,right
+newsday.com,Newsday,news,high,center
+newser.com,Newser,news,high,center
+newsmax.com,Newsmax,news,medium,right
+newsone.com,NewsOne,news,medium,left
+newstatesman.com,New Statesman,news,high,left
+newsweek.com,Newsweek,news,high,center
+nj.com,NJ.com,news,high,center
+noagendashow.net,No Agenda - Adam Curry & John C. Dvorak,news,low,right
+nola.com,NOLA.com,news,high,center
+nowthisnews.com,NowThis News,news,high,left
+nydailynews.com,New York Daily News,news,medium,left
+nypost.com,New York Post,news,medium,right
+nysun.com,New York Sun,news,medium,right
+oann.com,OAN Network,news,medium,right
+observer.com,Observer,news,high,center
+ocregister.com,Orange County Register,news,high,center
+omaha.com,Omaha World-Herald,news,high,center
+opentodebate.org,Open to Debate,news,high,center
+oregonlive.com,The Oregonian,news,high,center
+orlandosentinel.com,Orlando Sentinel,news,high,left
+outsideonline.com,Outside Online,news,high,left
+pagesix.com,Page Six,news,medium,center
+palmerreport.com,Palmer Report,news,low,left
+pantsuitpoliticsshow.com,Pantsuit Politics with Sarah Stewart Holland and Beth Silvers,news,medium,left
+pastemagazine.com,Paste Magazine,news,medium,left
+patch.com,Patch,news,high,center
+patriotpost.us,The Patriot Post,news,low,right
+people.com,People Magazine,news,high,center
+peoplefor.org,Right Wing Watch | People For the American Way,news,medium,left
+pjmedia.com,PJ Media,news,low,right
+podcasts.voxmedia.com,Pivot - Kara Swisher & Scott Galloway,news,medium,left
+podnews.net,Pod is a Woman,news,high,left
+politico-playbook-audio-briefing.simplecast.com,Politico Playbook Daily Briefing,news,high,center
+politicon.com,The Mary Trump Show,news,medium,left
+politicos-pulse-check.simplecast.com,Politico's Pulse Check,news,high,center
+popsmokemedia.com,Pop Smoke Media,news,high,center
+popsugar.com,PS - Popsugar,news,medium,left
+popular.info,Popular Information,news,high,left
+post-gazette.com,Pittsburgh Post-Gazette,news,high,center
+prageru.com,The Candace Owens Show - PragerU,news,low,right
+progressive.org,The Progressive Magazine,news,medium,left
+prospect.org,The American Prospect,news,medium,left
+qanonanonymous.com,QAnon Anonymous,news,medium,left
+quillette.com,Quillette,news,high,right
+qz.com,Quartz,news,high,center
+radiotimes.com,Radio Times,news,high,center
+rantt.com,Rantt Media,news,high,left
+rasmussenreports.com,Rasmussen Reports,news,medium,right
+rawstory.com,Raw Story,news,medium,left
+readtangle.com,Tangle,news,high,center
+realchangenews.org,Real Change News,news,high,left
+realcleardefense.com,RealClearDefense,news,high,center
+realclearpolitics.com,RealClearPolitics,news,medium,right
+realrawnews.com,Real Raw News,news,low,right
+rep-am.com,Republican-American,news,high,center
+revealnews.org,Reveal,news,high,left
+reviewjournal.com,Las Vegas Review-Journal,news,high,center
+rollingstone.com,Rolling Stone,news,medium,left
+ronpaullibertyreport.com,Ron Paul Liberty Report,news,low,right
+rttnews.com,RTTNews,news,high,center
+rudygiulianics.com,Rudy Giuliani's Common Sense,news,low,right
+ruthlesspodcast.com,Ruthless Podcast,news,medium,right
+sacbee.com,The Sacramento Bee,news,high,left
+salon.com,Salon,news,medium,left
+samharris.org,Making Sense With Sam Harris,news,medium,center
+san.com,Straight Arrow News,news,high,center
+sandiegouniontribune.com,The San Diego Union-Tribune,news,high,center
+savethenationnews.com,Save the Nation (Newsmax),news,medium,right
+sciencenews.org,Science News,news,high,center
+scientificamerican.com,Scientific American,news,medium,left
+scmp.com,South China Morning Post,news,high,center
+scrippsnews.com,Scripps News,news,high,center
+seattlepi.com,SeattlePI,news,high,center
+seattletimes.com,Seattle Times,news,high,left
+secondnexus.com,Second Nexus,news,medium,left
+semafor.com,Semafor,news,high,center
+sfexaminer.com,San Francisco Examiner,news,high,left
+sfgate.com,SFGATE,news,high,center
+shadowproof.com,Shadowproof,news,medium,left
+sltrib.com,Salt Lake Tribune,news,high,center
+smartless.com,SmartLess,news,medium,left
+smithsonianmag.com,Smithsonian Magazine,news,high,center
+sojo.net,Sojourners,news,high,left
+spectator.org,The American Spectator,news,low,right
+sputnikglobe.com,Sputnik International News,news,medium,right
+standupwithpete.libsyn.com,Stand Up! with Pete Dominick,news,medium,left
+startribune.com,The Minnesota Star Tribune,news,high,center
+statnews.com,Stat News,news,high,center
+stream.org,The Stream,news,low,right
+sun-sentinel.com,South Florida Sun Sentinel,news,high,center
+sundaypapers.net,Sunday Papers,news,medium,left
+syracuse.com,Syracuse Post-Standard,news,high,center
+talkingpointsmemo.com,Talking Points Memo - Josh Marshall,news,medium,left
+tampabay.com,Tampa Bay Times,news,high,center
+techcrunch.com,TechCrunch,news,high,center
+teenvogue.com,Teen Vogue,news,high,left
+tennessean.com,Tennessean,news,high,center
+tgpfactcheck.com,TGP FactCheck,news,low,right
+the-smerconish-podcast.simplecast.com,The Smerconish Podcast,news,high,center
+theadvocate.com,The Advocate - Baton Rouge,news,high,center
+theamericanconservative.com,The American Conservative,news,medium,right
+theblaze.com,Blaze Media,news,medium,right
+thebulwark.com,The Bulwark,news,medium,center
+thecollegefix.com,The College Fix,news,medium,right
+theconservativetreehouse.com,The Last Refuge,news,low,right
+thecut.com,The Cut,news,medium,left
+thedailybeast.com,The New Abnormal,news,low,left
+thedeal.com,The Deal,news,high,center
+thedispatch.com,The Remnant with Jonah Goldberg,news,high,center
+theeveningtimes.com,The Evening Times,news,high,center
+theglobeandmail.com,The Globe and Mail,news,high,center
+thehill.com,The Hill,news,high,center
+thelibertarianrepublic.com,The Libertarian Republic,news,medium,right
+thelibertyloft.com,The Liberty Loft,news,low,right
+themessenger.com,The Messenger,news,high,center
+themoscowtimes.com,The Moscow Times,news,high,center
+thenation.com,The Nation,news,medium,left
+thenewamerican.com,The New American,news,low,right
+thepeoplesvoice.tv,The People's Voice,news,low,right
+therealignment.substack.com,The Realignment,news,high,center
+therealnews.com,The Real News Network,news,high,left
+therightscoop.com,The Right Scoop,news,low,right
+therightview.com,RSBN: The Right View with Lara Trump,news,medium,right
+theroot.com,The Root,news,medium,left
+theskimm.com,TheSkimm,news,high,left
+thestranger.com,The Stranger,news,high,left
+thetimes.co.uk,The Story,news,high,left
+thetrace.org,The Trace,news,high,left
+theverge.com,The Verge,news,high,left
+theweek.com,The Week,news,high,left
+thewrap.com,The Wrap,news,high,center
+thisamericanlife.org,This American Life,news,high,left
+tmz.com,TMZ,news,medium,center
+today.com,Today Show (NBC),news,high,center
+townhall.com,Townhall,news,low,right
+tpusa.com,Turning Point USA,news,low,right
+trendingpoliticsnews.com,Trending Politics,news,low,right
+triblive.com,Pittsburgh Tribune-Review,news,high,center
+trishintel.com,The Trish Regan Show,news,low,right
+truepundit.com,True Pundit,news,high,right
+truthout.org,Truthout,news,medium,left
+twitchy.com,Twitchy,news,low,right
+tyt.com,TYT,news,medium,left
+un.org,UN News,news,high,center
+upi.com,UPI,news,high,center
+uproxx.com,UPROXX,news,medium,left
+upworthy.com,Upworthy,news,high,center
+usmagazine.com,US Weekly,news,high,center
+vanityfair.com,Vanity Fair,news,medium,left
+variety.com,Variety,news,high,center
+verdictpodcast.com,Verdict with Ted Cruz,news,medium,right
+vfw.org,Veterans of Foreign Wars VFW,news,high,center
+villagevoice.com,The Village Voice,news,high,left
+voanews.com,Voice of America,news,high,center
+vogue.com,Vogue,news,high,left
+vtforeignpolicy.com,Veterans Today | VT Foreign Policy,news,low,right
+vulture.com,Vulture,news,high,left
+wabcradio.com,The Larry Kudlow Show,news,low,right
+washingtonblade.com,Washington Blade,news,high,left
+washingtonexaminer.com,Washington Examiner,news,medium,right
+washingtonian.com,Washingtonian,news,high,center
+washingtonmonthly.com,Washington Monthly,news,medium,left
+washingtontimes.com,Washington Times,news,medium,right
+watch.tbn.org,TBN: Huckabee,news,low,right
+watchchad.com,The Chad Prather Show,news,low,right
+wattsupwiththat.com,Watts Up With That? - Anthony Watts,news,low,right
+wbur.org,WBUR: On Point,news,high,center
+wearethemeteor.com,UNDISTRACTED with Brittany Packnett Cunningham,news,medium,left
+weaselzippers.us,Weasel Zippers,news,medium,right
+wethefifth.com,The Fifth Column,news,medium,right
+whowhatwhy.org,Who What Why,news,high,left
+wired.com,WIRED,news,high,left
+wnycstudios.org,On the Media,news,high,left
+wonkette.com,Wonkette,news,low,left
+worldandeverything.org,The World and Everything In It,news,high,right
+wsws.org,World Socialist Web Site,news,medium,left
+wtop.com,Washington's Top News WTOP,news,high,center
+x22report.com,X22 Report,news,low,right
+yahoo.com,Yahoo News,news,high,center
+yesmagazine.org,Yes! Magazine,news,high,left

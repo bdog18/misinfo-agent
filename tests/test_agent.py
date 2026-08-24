@@ -313,38 +313,53 @@ def test_max_steps_safety_cap_stops_the_loop(mock_get_client):
 def test_submit_verdict_rejected_without_disconfirming_evidence_then_accepted(mock_get_client):
     responses = [
         _response(
+            "Assessing the first source.", "tool_assess_source",
+            {"url": "https://example.com/a"}, "t1",
+        ),
+        _response(
             "Comparing.", "tool_compare_claim_to_text",
-            {"claim": "c", "text": "supports it", "url": "https://example.com/a"}, "t1",
+            {"claim": "c", "text": "supports it", "url": "https://example.com/a"}, "t2",
         ),
         _response(
             "Submitting.", "submit_verdict",
-            {"verdict": "true", "confidence": 0.9, "reasoning": "Looks true."}, "t2",
+            {"verdict": "true", "confidence": 0.9, "reasoning": "Looks true."}, "t3",
         ),
         _response(
-            "Let me check another source.", "tool_compare_claim_to_text",
-            {"claim": "c", "text": "actually refutes it", "url": "https://example.com/b"}, "t3",
+            "Let me check another source.", "tool_assess_source",
+            {"url": "https://example.com/b"}, "t4",
+        ),
+        _response(
+            "Comparing the second source.", "tool_compare_claim_to_text",
+            {"claim": "c", "text": "actually refutes it", "url": "https://example.com/b"}, "t5",
         ),
         _response(
             "Now submitting for real.", "submit_verdict",
-            {"verdict": "mixed", "confidence": 0.6, "reasoning": "Mixed evidence found."}, "t4",
+            {"verdict": "mixed", "confidence": 0.6, "reasoning": "Mixed evidence found."}, "t6",
         ),
     ]
     _patched_client(mock_get_client, responses)
 
+    fake_assess = MagicMock(side_effect=[
+        tools.SourceAssessment(domain="example.com", type="unknown", credibility="unknown", bias="unknown"),
+        tools.SourceAssessment(domain="example.com", type="unknown", credibility="unknown", bias="unknown"),
+    ])
     fake_compare = MagicMock(side_effect=[
         tools.ComparisonResult(stance="supports", confidence=0.8, quote=None, reasoning="r1"),
         tools.ComparisonResult(stance="refutes", confidence=0.7, quote=None, reasoning="r2"),
     ])
 
-    with patch.dict("misinfo_agent.agent.TOOL_DISPATCH", {"tool_compare_claim_to_text": fake_compare}):
+    with patch.dict(
+        "misinfo_agent.agent.TOOL_DISPATCH",
+        {"tool_assess_source": fake_assess, "tool_compare_claim_to_text": fake_compare},
+    ):
         investigation = run_investigation("some claim", max_steps=10)
 
     assert investigation.verdict == "mixed"
     assert investigation.stop_reason == "verdict_submitted"
-    assert len(investigation.steps) == 4
+    assert len(investigation.steps) == 6
     # The rejected attempt should be logged, but not as the thing that ended the loop.
-    assert investigation.steps[1].action == "submit_verdict"
-    assert "disconfirm" in investigation.steps[1].observation.lower()
+    assert investigation.steps[2].action == "submit_verdict"
+    assert "disconfirm" in investigation.steps[2].observation.lower()
     assert len(investigation.evidence) == 2
 
 
@@ -368,3 +383,23 @@ def test_domain_hit_cap_blocks_dispatch_beyond_the_limit(mock_get_client):
     last_step = investigation.steps[-1]
     assert last_step.action == "tool_fetch"
     assert "cdc.gov" in last_step.observation.lower()
+
+
+@patch("misinfo_agent.tools._get_anthropic_client")
+def test_compare_rejected_without_prior_source_assessment(mock_get_client):
+    responses = [
+        _response(
+            "Comparing without assessing first.", "tool_compare_claim_to_text",
+            {"claim": "c", "text": "some text", "url": "https://example.com/unassessed"}, "t1",
+        ),
+    ]
+    _patched_client(mock_get_client, responses)
+    fake_compare = MagicMock()
+
+    with patch.dict("misinfo_agent.agent.TOOL_DISPATCH", {"tool_compare_claim_to_text": fake_compare}):
+        investigation = run_investigation("some claim", max_steps=1)
+
+    fake_compare.assert_not_called()
+    assert investigation.evidence == []
+    assert "assess_source" in investigation.steps[0].observation.lower()
+    assert "example.com/unassessed" in investigation.steps[0].observation
