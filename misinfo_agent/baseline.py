@@ -9,17 +9,17 @@ BASELINE_SYSTEM_PROMPT = (
 )
 
 
-def run_baseline(claim: str) -> trace.Investigation:
+def run_baseline(claim: str, *, exclude_domains: set[str] | None = None) -> trace.Investigation:
     """Run the baseline agent."""
     # Create a new investigation
     investigation = trace.Investigation(
-        claim=claim, 
-        arm="baseline", 
+        claim=claim,
+        arm="baseline",
         model=agent.ORCHESTRATOR_MODEL
     )
-    
+
     # Step 1: Retrieve relevant information using the RAG tool
-    search_observation = tools.tool_search(claim)
+    search_observation = tools.tool_search(claim, exclude_domains=exclude_domains)
     investigation.add_step(
         thought="Single-shot baseline: one search, then a verdict", 
         action="tool_search",

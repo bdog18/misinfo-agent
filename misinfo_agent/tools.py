@@ -59,7 +59,9 @@ class SearchResult(BaseModel):
     score: float
 
 
-def tool_search(query: str, max_results: int = 5) -> list[SearchResult]:
+def tool_search(
+    query: str, max_results: int = 5, *, exclude_domains: set[str] | None = None
+) -> list[SearchResult]:
     """Search the web for a query via Tavily and return structured results.
 
     Parameters
@@ -67,6 +69,12 @@ def tool_search(query: str, max_results: int = 5) -> list[SearchResult]:
     query: search string built by the agent (e.g. the claim text, or a
         follow-up query like "site:cdc.gov measles vaccine autism").
     max_results: cap on number of results returned.
+    exclude_domains: domains to drop from the results before returning,
+        e.g. fact_checker_domains() during an eval run — this eval's claim
+        set is scraped from fact-checkers' own articles, so leaving them
+        searchable lets the agent find and cite the answer key directly
+        instead of investigating independently. Not exposed to the model
+        as a tool parameter; the caller (agent/baseline loop) injects it.
 
     Returns
     -------
@@ -83,15 +91,20 @@ def tool_search(query: str, max_results: int = 5) -> list[SearchResult]:
     function.
     """
     client = _get_client()
-    
+
     response = client.search(query, max_results=max_results)
-    return [SearchResult(
+    results = [SearchResult(
         title=result["title"],
         url=result["url"],
         snippet=result["content"],
         published_date=result.get("published_date"),
         score=result["score"]
     ) for result in response["results"]]
+
+    if exclude_domains:
+        results = [r for r in results if _extract_domain(r.url) not in exclude_domains]
+
+    return results
 
 
 # ---------------------------------------------------------------------------
@@ -370,6 +383,16 @@ def _extract_domain(url: str) -> str:
     if netloc.startswith("www."):
         netloc = netloc[len("www.") :]
     return netloc
+
+
+def fact_checker_domains() -> set[str]:
+    """Domains rated type="fact-checker" in the curated credibility table.
+
+    Used as tool_search's exclude_domains during eval runs — see
+    tool_search's docstring for why.
+    """
+    table = _load_credibility_table()
+    return {domain for domain, row in table.items() if row["type"] == "fact-checker"}
 
 
 def tool_assess_source(url: str) -> SourceAssessment:

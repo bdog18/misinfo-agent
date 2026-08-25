@@ -72,7 +72,20 @@ def test_run_baseline_calls_tool_search_once_with_the_claim(mock_search, mock_ge
 
     run_baseline("some claim")
 
-    mock_search.assert_called_once_with("some claim")
+    mock_search.assert_called_once_with("some claim", exclude_domains=None)
+
+
+@patch("misinfo_agent.tools._get_anthropic_client")
+@patch("misinfo_agent.tools.tool_search")
+def test_run_baseline_passes_exclude_domains_through(mock_search, mock_get_client):
+    mock_search.return_value = []
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _fake_verdict_response()
+    mock_get_client.return_value = mock_client
+
+    run_baseline("some claim", exclude_domains={"politifact.com"})
+
+    mock_search.assert_called_once_with("some claim", exclude_domains={"politifact.com"})
 
 
 @patch("misinfo_agent.tools._get_anthropic_client")

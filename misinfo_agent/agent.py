@@ -173,7 +173,9 @@ def _sought_disconfirming_evidence(investigation: trace.Investigation) -> bool:
     return any(evidence.stance == "refutes" or evidence.stance == "mixed" for evidence in investigation.evidence)
 
 
-def run_investigation(claim: str, max_steps: int = 15) -> trace.Investigation:
+def run_investigation(
+    claim: str, max_steps: int = 15, *, exclude_domains: set[str] | None = None
+) -> trace.Investigation:
     """Run a ReAct investigation loop on a claim."""
     investigation = trace.Investigation(claim=claim, arm="agent", model=ORCHESTRATOR_MODEL)
     messages = [
@@ -212,10 +214,15 @@ def run_investigation(claim: str, max_steps: int = 15) -> trace.Investigation:
                 investigation.reasoning = action_input["reasoning"]
                 investigation.stop_reason = "verdict_submitted"
                 observation = "VERDICT SUBMITTED"
+        elif action == "tool_search":
+            result = TOOL_DISPATCH["tool_search"](exclude_domains=exclude_domains, **action_input)
+            observation = str(result)
         elif action == "tool_fetch":
             url = action_input.get("url", "")
             domain = tools._extract_domain(url)
-            if _domain_hit_count(investigation, domain) >= MAX_HITS_PER_DOMAIN:
+            if exclude_domains and domain in exclude_domains:
+                observation = f"REJECTED: {domain} is excluded from this investigation. Use independent primary sources instead."
+            elif _domain_hit_count(investigation, domain) >= MAX_HITS_PER_DOMAIN:
                 observation = f"REJECTED: You have already fetched {MAX_HITS_PER_DOMAIN} urls from {domain}. Please diversify your sources."
             else:
                 result = TOOL_DISPATCH["tool_fetch"](**action_input)

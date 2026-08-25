@@ -403,3 +403,65 @@ def test_compare_rejected_without_prior_source_assessment(mock_get_client):
     assert investigation.evidence == []
     assert "assess_source" in investigation.steps[0].observation.lower()
     assert "example.com/unassessed" in investigation.steps[0].observation
+
+
+@patch("misinfo_agent.tools._get_anthropic_client")
+def test_run_investigation_passes_exclude_domains_to_tool_search(mock_get_client):
+    responses = [_response("Searching.", "tool_search", {"query": "some claim"}, "t1")]
+    _patched_client(mock_get_client, responses)
+    fake_search = MagicMock(return_value=[])
+
+    with patch.dict("misinfo_agent.agent.TOOL_DISPATCH", {"tool_search": fake_search}):
+        run_investigation("some claim", max_steps=1, exclude_domains={"politifact.com"})
+
+    fake_search.assert_called_once_with(query="some claim", exclude_domains={"politifact.com"})
+
+
+@patch("misinfo_agent.tools._get_anthropic_client")
+def test_tool_fetch_rejected_for_excluded_domain(mock_get_client):
+    responses = [
+        _response(
+            "Fetching the fact-check directly.", "tool_fetch",
+            {"url": "https://politifact.com/factchecks/x"}, "t1",
+        ),
+    ]
+    _patched_client(mock_get_client, responses)
+    fake_fetch = MagicMock()
+
+    with patch.dict("misinfo_agent.agent.TOOL_DISPATCH", {"tool_fetch": fake_fetch}):
+        investigation = run_investigation(
+            "some claim", max_steps=1, exclude_domains={"politifact.com"}
+        )
+
+    fake_fetch.assert_not_called()
+    assert "REJECTED" in investigation.steps[0].observation
+    assert "politifact.com" in investigation.steps[0].observation
+
+
+@patch("misinfo_agent.tools._get_anthropic_client")
+def test_tool_fetch_allowed_for_non_excluded_domain(mock_get_client):
+    responses = [
+        _response("Fetching.", "tool_fetch", {"url": "https://cdc.gov/page"}, "t1"),
+    ]
+    _patched_client(mock_get_client, responses)
+    fake_fetch = MagicMock(return_value=tools.FetchResult(url="https://cdc.gov/page", text="ok"))
+
+    with patch.dict("misinfo_agent.agent.TOOL_DISPATCH", {"tool_fetch": fake_fetch}):
+        investigation = run_investigation(
+            "some claim", max_steps=1, exclude_domains={"politifact.com"}
+        )
+
+    fake_fetch.assert_called_once_with(url="https://cdc.gov/page")
+    assert "REJECTED" not in investigation.steps[0].observation
+
+
+@patch("misinfo_agent.tools._get_anthropic_client")
+def test_run_investigation_exclude_domains_defaults_to_none(mock_get_client):
+    responses = [_response("Searching.", "tool_search", {"query": "some claim"}, "t1")]
+    _patched_client(mock_get_client, responses)
+    fake_search = MagicMock(return_value=[])
+
+    with patch.dict("misinfo_agent.agent.TOOL_DISPATCH", {"tool_search": fake_search}):
+        run_investigation("some claim", max_steps=1)
+
+    fake_search.assert_called_once_with(query="some claim", exclude_domains=None)

@@ -97,8 +97,11 @@ def parse_factcheck(session: requests.Session, url: str, source: str, seq: int) 
         m = re.search(r"stated on (\w+ \d{1,2}, \d{4})", date_el.get_text(strip=True))
         if m:
             from datetime import datetime
-
-            date_claimed = datetime.strptime(m.group(1), "%B %d, %Y").date().isoformat()
+            try:
+                date_claimed = datetime.strptime(m.group(1), "%B %d, %Y").date().isoformat()
+            except ValueError:
+                print(f"  skip (invalid date claimed): {url}", file=sys.stderr)
+                return None
 
     date_checked = None
     m = re.search(r"/factchecks/(\d{4})/(\w{3})/(\d{2})/", url)
@@ -106,7 +109,11 @@ def parse_factcheck(session: requests.Session, url: str, source: str, seq: int) 
         from datetime import datetime
 
         year, mon_abbr, day = m.groups()
-        date_checked = datetime.strptime(f"{mon_abbr} {day} {year}", "%b %d %Y").date().isoformat()
+        try:
+            date_checked = datetime.strptime(f"{mon_abbr} {day} {year}", "%b %d %Y").date().isoformat()
+        except ValueError:
+            print(f"  skip (invalid date): {url}", file=sys.stderr)
+            return None
 
     citations = []
     if sources_section:
@@ -165,7 +172,7 @@ def main() -> None:
             time.sleep(CRAWL_DELAY_SECONDS)
 
     args.out.parent.mkdir(parents=True, exist_ok=True)
-    with args.out.open("w") as f:
+    with args.out.open("a") as f:
         for claim in claims:
             f.write(claim.model_dump_json() + "\n")
 

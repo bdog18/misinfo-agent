@@ -11,6 +11,7 @@ from misinfo_agent.tools import (
     SearchResult,
     SourceAssessment,
     _extract_domain,
+    fact_checker_domains,
     tool_assess_source,
     tool_compare_claim_to_text,
     tool_fetch,
@@ -83,6 +84,28 @@ def test_tool_search_empty_results_returns_empty_list(mock_get_client):
     mock_get_client.return_value = mock_client
 
     assert tool_search("query with no hits") == []
+
+
+@patch("misinfo_agent.tools._get_client")
+def test_tool_search_excludes_matching_domains(mock_get_client):
+    mock_client = MagicMock()
+    mock_client.search.return_value = FAKE_TAVILY_RESPONSE
+    mock_get_client.return_value = mock_client
+
+    results = tool_search("measles vaccine autism claim", exclude_domains={"cdc.gov"})
+
+    assert [r.url for r in results] == ["https://example-blog.com/post"]
+
+
+@patch("misinfo_agent.tools._get_client")
+def test_tool_search_exclude_domains_none_keeps_everything(mock_get_client):
+    mock_client = MagicMock()
+    mock_client.search.return_value = FAKE_TAVILY_RESPONSE
+    mock_get_client.return_value = mock_client
+
+    results = tool_search("measles vaccine autism claim", exclude_domains=None)
+
+    assert len(results) == 2
 
 
 def test_tool_search_raises_clear_error_without_api_key(monkeypatch):
@@ -303,3 +326,26 @@ def test_tool_assess_source_strips_www_before_lookup(mock_load_table):
 
     assert result.credibility == "low"
     assert result.bias == "right"
+
+
+FAKE_TABLE_WITH_FACT_CHECKERS = {
+    "politifact.com": {
+        "domain": "politifact.com", "name": "PolitiFact", "type": "fact-checker",
+        "credibility": "high", "bias": "center",
+    },
+    "snopes.com": {
+        "domain": "snopes.com", "name": "Snopes", "type": "fact-checker",
+        "credibility": "high", "bias": "center",
+    },
+    "cdc.gov": {
+        "domain": "cdc.gov", "name": "CDC", "type": "government",
+        "credibility": "high", "bias": "center",
+    },
+}
+
+
+@patch("misinfo_agent.tools._load_credibility_table")
+def test_fact_checker_domains_returns_only_fact_checker_type(mock_load_table):
+    mock_load_table.return_value = FAKE_TABLE_WITH_FACT_CHECKERS
+
+    assert fact_checker_domains() == {"politifact.com", "snopes.com"}
