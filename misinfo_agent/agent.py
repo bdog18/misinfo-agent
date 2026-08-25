@@ -3,6 +3,31 @@
 from misinfo_agent import tools, trace
 
 
+SUBMIT_VERDICT_TOOL = {
+    "name": "submit_verdict",
+    "description": (
+        "Submit a final verdict based on the investigation taking into account disconfirming evidence."
+    ),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "verdict": {
+                "enum": ["true", "false", "mixed"],
+                "description": "The final verdict based on the investigation."
+            },
+            "confidence": {
+                "type": "number",
+                "description": "The confidence level of the verdict."
+            },
+            "reasoning": {
+                "type": "string",
+                "description": "The reasoning behind the verdict."
+            }
+        },
+        "required": ["verdict", "confidence", "reasoning"]
+    }
+}
+
 AGENT_TOOLS = [
     {
         "name": "tool_fetch",
@@ -81,30 +106,7 @@ AGENT_TOOLS = [
             "required": ["claim", "text", "url"]
         }  
     },
-    {
-        "name": "submit_verdict",
-        "description": (
-            "Submit a final verdict based on the investigation taking into account disconfirming evidence."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "verdict": {
-                    "enum": ["true", "false", "mixed"],
-                    "description": "The final verdict based on the investigation."
-                },
-                "confidence": {
-                    "type": "number",
-                    "description": "The confidence level of the verdict."
-                },
-                "reasoning": {
-                    "type": "string",
-                    "description": "The reasoning behind the verdict."
-                }
-            },
-            "required": ["verdict", "confidence", "reasoning"]
-        }
-    },
+    SUBMIT_VERDICT_TOOL
 ]
 
 
