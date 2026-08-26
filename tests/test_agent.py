@@ -418,6 +418,43 @@ def test_run_investigation_passes_exclude_domains_to_tool_search(mock_get_client
 
 
 @patch("misinfo_agent.tools._get_anthropic_client")
+def test_submit_verdict_coerces_non_string_verdict_to_lowercase_string(mock_get_client):
+    # Real Anthropic tool calls have occasionally returned a JSON boolean
+    # (False) for "verdict" instead of the string "false" - since the enum
+    # values happen to collide with JSON's own boolean literals. Nothing
+    # should end up storing that raw bool: investigation.verdict must
+    # always be the string the rest of the codebase (and score.py) expects.
+    responses = [
+        _response("Assessing.", "tool_assess_source", {"url": "https://example.com/a"}, "t1"),
+        _response(
+            "Comparing.", "tool_compare_claim_to_text",
+            {"claim": "c", "text": "refutes it", "url": "https://example.com/a"}, "t2",
+        ),
+        _response(
+            "Submitting.", "submit_verdict",
+            {"verdict": False, "confidence": 0.9, "reasoning": "Refuted."}, "t3",
+        ),
+    ]
+    _patched_client(mock_get_client, responses)
+
+    fake_assess = MagicMock(return_value=tools.SourceAssessment(
+        domain="example.com", type="unknown", credibility="unknown", bias="unknown",
+    ))
+    fake_compare = MagicMock(return_value=tools.ComparisonResult(
+        stance="refutes", confidence=0.9, quote=None, reasoning="r",
+    ))
+
+    with patch.dict(
+        "misinfo_agent.agent.TOOL_DISPATCH",
+        {"tool_assess_source": fake_assess, "tool_compare_claim_to_text": fake_compare},
+    ):
+        investigation = run_investigation("some claim", max_steps=5)
+
+    assert investigation.verdict == "false"
+    assert isinstance(investigation.verdict, str)
+
+
+@patch("misinfo_agent.tools._get_anthropic_client")
 def test_tool_fetch_rejected_for_excluded_domain(mock_get_client):
     responses = [
         _response(

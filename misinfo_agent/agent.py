@@ -12,6 +12,7 @@ SUBMIT_VERDICT_TOOL = {
         "type": "object",
         "properties": {
             "verdict": {
+                "type": "string",
                 "enum": ["true", "false", "mixed"],
                 "description": "The final verdict based on the investigation."
             },
@@ -209,7 +210,7 @@ def run_investigation(
             elif not _sought_disconfirming_evidence(investigation):
                 observation = "REJECTED: You must gather at least one piece of disconfirming evidence before submitting a verdict."
             else:
-                investigation.verdict = action_input["verdict"]
+                investigation.verdict = str(action_input["verdict"]).lower()
                 investigation.confidence = action_input["confidence"]
                 investigation.reasoning = action_input["reasoning"]
                 investigation.stop_reason = "verdict_submitted"

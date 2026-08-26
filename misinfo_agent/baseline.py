@@ -39,14 +39,14 @@ def run_baseline(claim: str, *, exclude_domains: set[str] | None = None) -> trac
         messages=[{"role": "user", "content": f"Claim: {claim}\n\nSearch results:\n{search_observation}"}],
     )
     verdict_input = response.content[0].input
-    investigation.verdict = verdict_input["verdict"]
+    investigation.verdict = str(verdict_input["verdict"]).lower()
     investigation.confidence = verdict_input["confidence"]
     investigation.reasoning = verdict_input["reasoning"]
     investigation.add_step(
         thought="Submitting search results for a verdict",
         action="submit_verdict",
         action_input=verdict_input,
-        observation=f"VERDICT SUBMITTED: {verdict_input['verdict']}",
+        observation=f"VERDICT SUBMITTED: {str(verdict_input['verdict']).lower()}",
         input_tokens=response.usage.input_tokens,
         output_tokens=response.usage.output_tokens
     )

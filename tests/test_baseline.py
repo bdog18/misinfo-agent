@@ -135,6 +135,24 @@ def test_run_baseline_logs_exactly_two_steps_with_correct_token_accounting(mock_
 
 @patch("misinfo_agent.tools._get_anthropic_client")
 @patch("misinfo_agent.tools.tool_search")
+def test_run_baseline_coerces_non_string_verdict_to_lowercase_string(mock_search, mock_get_client):
+    # Same real-API bug as agent.py: a tool call has returned a JSON
+    # boolean (False) for "verdict" instead of the string "false" - so
+    # investigation.verdict must always end up a string regardless of the
+    # raw type the model happened to return.
+    mock_search.return_value = FAKE_SEARCH_RESULTS
+    mock_client = MagicMock()
+    mock_client.messages.create.return_value = _fake_verdict_response(verdict=False)
+    mock_get_client.return_value = mock_client
+
+    investigation = run_baseline("some claim")
+
+    assert investigation.verdict == "false"
+    assert isinstance(investigation.verdict, str)
+
+
+@patch("misinfo_agent.tools._get_anthropic_client")
+@patch("misinfo_agent.tools.tool_search")
 def test_run_baseline_investigation_is_json_serializable(mock_search, mock_get_client):
     mock_search.return_value = FAKE_SEARCH_RESULTS
     mock_client = MagicMock()
