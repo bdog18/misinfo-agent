@@ -8,8 +8,8 @@ search, one answer, no loop) to answer one question: **does agentic
 autonomy earn its cost here, or does it just add latency and expense
 without matching quality?**
 
-Status: the batched eval has run. See Results below for the actual
-head-to-head numbers; Phase 7 (the full writeup) is still ahead.
+Status: Completed
+Full writeup: [WRITEUP.md](WRITEUP.md)
 
 ## Project status
 
@@ -23,7 +23,7 @@ head-to-head numbers; Phase 7 (the full writeup) is still ahead.
   step by step alongside the single-shot baseline for the same claim, and
   the `Dockerfile` builds/runs it (verified locally); not yet deployed to a
   brendenrunion.com subdomain
-- [ ] Phase 7 — writeup
+- [x] Phase 7 — writeup
 
 ## Results
 
