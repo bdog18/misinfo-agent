@@ -12,3 +12,4 @@ htmlcov/
 runs/
 
 PROJECT_BRIEF.md
+scripts/review_claims.py

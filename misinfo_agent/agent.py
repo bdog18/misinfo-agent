@@ -177,7 +177,32 @@ def _sought_disconfirming_evidence(investigation: trace.Investigation) -> bool:
 def run_investigation(
     claim: str, max_steps: int = 15, *, exclude_domains: set[str] | None = None
 ) -> trace.Investigation:
-    """Run a ReAct investigation loop on a claim."""
+    """Run a ReAct investigation loop on a claim, returning only the final result.
+
+    Thin wrapper around run_investigation_stream for callers (tests, the eval
+    harness) that only want the finished Investigation and don't care about
+    intermediate steps.
+    """
+    investigation = None
+    for investigation in run_investigation_stream(
+        claim, max_steps=max_steps, exclude_domains=exclude_domains
+    ):
+        pass
+    return investigation
+
+
+def run_investigation_stream(
+    claim: str, max_steps: int = 15, *, exclude_domains: set[str] | None = None
+):
+    """Run a ReAct investigation loop on a claim, yielding after every step.
+
+    Same loop as run_investigation, but yields the (mutated in place)
+    Investigation after each step is recorded so a caller — the Gradio demo,
+    in particular — can render the trace live instead of waiting for the
+    whole investigation to finish. The object yielded is always the same
+    Investigation instance; read it immediately, since it will keep mutating
+    on the next iteration.
+    """
     investigation = trace.Investigation(claim=claim, arm="agent", model=ORCHESTRATOR_MODEL)
     messages = [
         {"role": "user", "content": claim}
@@ -278,13 +303,14 @@ def run_investigation(
             }]
         })
 
+        yield investigation
+
         if investigation.stop_reason == "verdict_submitted":
             break
 
-    if len(investigation.steps) >= max_steps:
+    if len(investigation.steps) >= max_steps and investigation.stop_reason is None:
         investigation.stop_reason = "max_steps_reached"
-
-    return investigation
+        yield investigation
 
 
 if __name__ == "__main__":

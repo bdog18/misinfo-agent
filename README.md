@@ -21,7 +21,10 @@ methodology, and findings once the eval harness has run. See
 - [~] Phase 5 — eval harness built (`misinfo_agent/eval/harness.py`,
   `score.py`) and verified against the real Anthropic/Tavily APIs; the
   batched run itself is held pending the claim set (see below)
-- [ ] Phase 6 — Gradio demo (live trace) + Docker deploy
+- [x] Phase 6 — Gradio demo (`app/demo.py`) streams the agent's ReAct trace
+  step by step alongside the single-shot baseline for the same claim, and
+  the `Dockerfile` builds/runs it (verified locally); not yet deployed to a
+  brendenrunion.com subdomain
 - [ ] Phase 7 — writeup
 
 ## Ground-truth claim set

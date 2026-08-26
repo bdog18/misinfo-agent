@@ -49,6 +49,39 @@ def _get(session: requests.Session, url: str) -> requests.Response:
     return resp
 
 
+RATING_TO_URL_SLUG = {
+    "true": "true",
+    "mostly-true": "mostly-true",
+    "half-true": "half-true",
+    "mostly-false": "mostly-false",
+    "false": "false",
+    "pants-fire": "pants-fire",
+}
+
+
+def rating_filtered_urls(session: requests.Session, rating: str, limit: int) -> list[str]:
+    """Pull fact-check URLs from PolitiFact's own rating-filtered listing page.
+
+    Lets a caller specifically backfill an under-represented verdict bucket
+    (e.g. "true", "half-true") instead of only ever getting whatever's most
+    recent in the general feed - which is what produced the original
+    heavily false-skewed batch.
+    """
+    slug = RATING_TO_URL_SLUG.get(rating)
+    if slug is None:
+        raise ValueError(f"Unknown rating {rating!r}; expected one of {sorted(RATING_TO_URL_SLUG)}")
+
+    resp = _get(session, f"https://www.politifact.com/factchecks/list/?ruling={slug}")
+    soup = BeautifulSoup(resp.text, "lxml")
+    urls, seen = [], set()
+    for a in soup.select("a.pf-statement-quote[href]"):
+        href = a["href"]
+        if href not in seen:
+            seen.add(href)
+            urls.append(href)
+    return urls[:limit]
+
+
 def latest_factcheck_urls(session: requests.Session, limit: int) -> list[str]:
     index = _get(session, SITEMAP_INDEX)
     time.sleep(CRAWL_DELAY_SECONDS)
@@ -150,22 +183,63 @@ def parse_factcheck(session: requests.Session, url: str, source: str, seq: int) 
     )
 
 
+def _existing_fact_check_urls_and_max_seq(out_path: Path) -> tuple[set[str], int]:
+    """URLs already scraped, and the highest numeric suffix already used in
+    an id like "politifact-0100" - NOT just a count of existing claims,
+    since a handful of urls get skipped during parsing (missing rating,
+    unparseable date), leaving gaps in the sequence.
+    """
+    if not out_path.exists():
+        return set(), 0
+    urls, max_seq = set(), 0
+    with out_path.open() as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            record = json.loads(line)
+            urls.add(record["fact_check_url"])
+            if record["source"] == "politifact":
+                max_seq = max(max_seq, int(record["id"].rsplit("-", 1)[1]))
+    return urls, max_seq
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--n", type=int, default=10, help="number of claims to scrape")
+    parser.add_argument(
+        "--rating",
+        choices=sorted(RATING_TO_URL_SLUG),
+        help="pull from PolitiFact's own rating-filtered list instead of the "
+        "general latest-fact-checks feed, to backfill a specific verdict bucket",
+    )
     parser.add_argument(
         "--out", type=Path, default=Path("misinfo_agent/eval/claims.jsonl")
     )
     args = parser.parse_args()
 
     session = requests.Session()
-    print(f"Fetching latest {args.n} fact-check URLs from PolitiFact sitemap...")
-    urls = latest_factcheck_urls(session, args.n)
+    existing_urls, max_seq = _existing_fact_check_urls_and_max_seq(args.out)
+
+    if args.rating:
+        print(f"Fetching up to {args.n} '{args.rating}'-rated fact-check URLs from PolitiFact...")
+        candidate_urls = rating_filtered_urls(session, args.rating, args.n * 2)
+    else:
+        print(f"Fetching latest {args.n} fact-check URLs from PolitiFact sitemap...")
+        candidate_urls = latest_factcheck_urls(session, args.n * 2)
+
+    urls = [u for u in candidate_urls if u not in existing_urls][: args.n]
+    if len(urls) < args.n:
+        print(
+            f"Note: only found {len(urls)} new (not-already-scraped) urls, "
+            f"fewer than the requested {args.n}.",
+            file=sys.stderr,
+        )
 
     claims: list[Claim] = []
     for i, url in enumerate(urls, start=1):
         print(f"[{i}/{len(urls)}] {url}")
-        claim = parse_factcheck(session, url, source="politifact", seq=i)
+        claim = parse_factcheck(session, url, source="politifact", seq=max_seq + i)
         if claim:
             claims.append(claim)
         if i < len(urls):
