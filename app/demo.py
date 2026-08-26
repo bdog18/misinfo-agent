@@ -134,15 +134,48 @@ def investigate(claim: str, max_steps: int):
         )
 
 
+CSS = """
+.gradio-container {
+    max-width: 1100px !important;
+    margin: 0 auto !important;
+}
+#header {
+    text-align: center;
+    margin-bottom: 0;
+}
+#subheader {
+    text-align: center;
+    color: var(--body-text-color-subdued);
+    margin-bottom: 12px;
+}
+.input-box {
+    border: 1px solid var(--border-color-primary);
+    border-radius: var(--radius-lg);
+    padding: 8px 12px;
+    --block-padding: 6px 10px;
+    --layout-gap: 8px;
+}
+.results-box {
+    border: 1px solid var(--border-color-primary);
+    border-radius: var(--radius-lg);
+    padding: 12px 16px;
+    min-height: 96px;
+}
+.panel-title {
+    text-align: center;
+}
+"""
+
 with gr.Blocks(title="Misinformation Investigation Agent") as demo:
+    gr.Markdown("# 🔍 Misinformation Investigation Agent", elem_id="header")
     gr.Markdown(
-        "# Misinformation Investigation Agent\n"
         "A ReAct agent investigates a claim step by step — deciding what to "
         "search, which sources to check, and when it has enough evidence — "
         "against a single-shot RAG baseline given the same tools. Watch the "
         "agent's trace build live below; a passing agent is expected to seek "
         "out at least one piece of *disconfirming* evidence before it's "
-        "allowed to submit a verdict."
+        "allowed to submit a verdict.",
+        elem_id="subheader",
     )
     if MISSING_KEYS:
         gr.Markdown(
@@ -150,36 +183,40 @@ with gr.Blocks(title="Misinformation Investigation Agent") as demo:
             "Copy `.env.example` to `.env`, add your keys, and restart."
         )
 
-    claim_box = gr.Textbox(
-        label="Claim to investigate",
-        placeholder="e.g. The measles vaccine causes autism.",
-        max_lines=3,
-    )
-    with gr.Accordion("Advanced settings", open=False):
-        max_steps_slider = gr.Slider(
-            minimum=5,
-            maximum=15,
-            value=DEFAULT_MAX_STEPS,
-            step=1,
-            label="Max agent steps (safety cap)",
+    with gr.Group(elem_classes=["input-box"]):
+        claim_box = gr.Textbox(
+            placeholder="e.g. The measles vaccine causes autism.",
+            label="Claim to investigate",
         )
-    run_button = gr.Button("Investigate", variant="primary")
+        with gr.Accordion("Advanced settings", open=False):
+            max_steps_slider = gr.Slider(
+                minimum=5,
+                maximum=15,
+                value=DEFAULT_MAX_STEPS,
+                step=1,
+                label="Max agent steps (safety cap)",
+            )
+        with gr.Row():
+            run_button = gr.Button("Investigate", variant="primary", scale=1)
+
     gr.Examples(examples=EXAMPLE_CLAIMS, inputs=claim_box)
 
     with gr.Row():
         with gr.Column():
-            gr.Markdown("### Agent (ReAct loop)")
-            agent_verdict_md = gr.Markdown("_Not run yet._")
-            agent_trace_md = gr.Markdown("_Waiting for the first step…_")
-            agent_evidence_df = gr.Dataframe(
-                headers=["step", "stance", "credibility", "bias", "url", "quote"],
-                label="Evidence gathered",
-                value=[],
-            )
+            gr.Markdown("### 🤖 Agent (ReAct loop)", elem_classes=["panel-title"])
+            with gr.Group(elem_classes=["results-box"]):
+                agent_verdict_md = gr.Markdown("_Not run yet._")
+                agent_trace_md = gr.Markdown("_Waiting for the first step…_")
+                agent_evidence_df = gr.Dataframe(
+                    headers=["step", "stance", "credibility", "bias", "url", "quote"],
+                    label="Evidence gathered",
+                    value=[],
+                )
         with gr.Column():
-            gr.Markdown("### Baseline (single-shot RAG)")
-            baseline_verdict_md = gr.Markdown("_Not run yet._")
-            baseline_trace_md = gr.Markdown("_Not run yet._")
+            gr.Markdown("### 📊 Baseline (single-shot RAG)", elem_classes=["panel-title"])
+            with gr.Group(elem_classes=["results-box"]):
+                baseline_verdict_md = gr.Markdown("_Not run yet._")
+                baseline_trace_md = gr.Markdown("_Not run yet._")
 
     run_button.click(
         fn=investigate,
@@ -196,4 +233,9 @@ demo.queue()
 
 
 if __name__ == "__main__":
-    demo.launch(server_name="0.0.0.0", server_port=int(os.environ.get("PORT", 7860)))
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=int(os.environ.get("PORT", 7860)),
+        theme=gr.themes.Soft(),
+        css=CSS,
+    )
