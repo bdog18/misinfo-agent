@@ -8,24 +8,70 @@ search, one answer, no loop) to answer one question: **does agentic
 autonomy earn its cost here, or does it just add latency and expense
 without matching quality?**
 
-Status: in progress. This README will carry the results tables,
-methodology, and findings once the eval harness has run. See
-`PROJECT_STATUS` below for where things stand.
+Status: the batched eval has run. See Results below for the actual
+head-to-head numbers; Phase 7 (the full writeup) is still ahead.
 
 ## Project status
 
-- [x] Phase 1 — ground-truth claim schema + scraped batch (in review)
+- [x] Phase 1 — ground-truth claim schema + scraped, reviewed batch
 - [x] Phase 2 — tools (search, fetch, source credibility, claim comparison)
 - [x] Phase 3 — ReAct agent loop
 - [x] Phase 4 — single-shot baseline
-- [~] Phase 5 — eval harness built (`misinfo_agent/eval/harness.py`,
-  `score.py`) and verified against the real Anthropic/Tavily APIs; the
-  batched run itself is held pending the claim set (see below)
+- [x] Phase 5 — eval harness (`misinfo_agent/eval/harness.py`, `score.py`),
+  batched run completed over 58 reviewed claims, both arms — see Results
 - [x] Phase 6 — Gradio demo (`app/demo.py`) streams the agent's ReAct trace
   step by step alongside the single-shot baseline for the same claim, and
   the `Dockerfile` builds/runs it (verified locally); not yet deployed to a
   brendenrunion.com subdomain
 - [ ] Phase 7 — writeup
+
+## Results
+
+58 reviewed claims (19 true / 20 mixed / 19 false), both arms, real
+Anthropic + Tavily API calls, run `runs/run_2026_08_25_19:33:39.jsonl`.
+Full per-arm numbers via `python -m misinfo_agent.eval.score <results-file>`.
+
+**Raw accuracy makes the agent look worse than the baseline — but that's
+the wrong headline.** Baseline: 75.9% (44/58). Agent: 72.4% (42/58) raw.
+The gap isn't reasoning quality: **19% of agent investigations (11/58)
+never reached a verdict at all**, hitting the 15-step safety cap with
+`verdict: null` — which scores as automatically wrong. Restricted to the
+47 investigations that actually finished, the agent hits **89.4%
+accuracy — well above the baseline's 75.9%.**
+
+**Why investigations don't finish: the disconfirming-evidence guardrail
+can starve on claims where it can't be satisfied.** `submit_verdict` hard-
+rejects unless the agent has already gathered evidence that disconfirms,
+complicates, or is mixed on the claim. For a claim that's actually *true*,
+there may be no legitimate disconfirming evidence to find — so the agent
+keeps searching, keeps getting rejected, and burns its whole step budget.
+Stuck rate by ground truth: **true 26.3% (5/19) vs. mixed 15.0% (3/20) vs.
+false 15.8% (3/19)** — a real, if modest-sample, skew toward the verdict
+class where the guardrail's own assumption doesn't hold. This is reported
+as a limitation of hard-enforced guardrails, not fixed and rerun — see
+`score.py`'s `attribute_failure` for the "incomplete" category this
+produced (kept separate from `reasoning_failure`/`search_failure`, since a
+`null` verdict never actually concluded anything).
+
+**Cost: the agent is ~34x more expensive per claim, unconditionally.**
+Agent: ~129,142 input / ~4,229 output tokens/claim (~$0.30 at Sonnet 5
+pricing). Baseline: ~2,614 input / ~365 output tokens/claim (~$0.009).
+That multiple holds regardless of the accuracy story above — better
+judgment when it completes, but nowhere near cheap.
+
+**Failure attribution, for the 5 agent claims that finished with an
+actually-wrong verdict:** 1 `reasoning_failure` (found the right source,
+still concluded wrong), 4 `search_failure` (never found a source matching
+the claim's citation domains). Baseline's 14 wrong claims are all
+`search_failure` by construction — it never gathers tracked evidence at
+all, so `found_disconfirming_evidence` is always `False` for it; this
+isn't a finding about the baseline's reasoning, just the metric's
+mechanical floor for an arm with no evidence-gathering step.
+
+**Net answer to "does agentic autonomy earn its cost here":** better
+judgment when the agent actually finishes, an unreliable completion rate
+(especially on true claims, for a mechanistically understood reason), and
+substantially more expensive either way. Not a clean win for autonomy.
 
 ## Ground-truth claim set
 
@@ -34,16 +80,16 @@ PolitiFact ground-truth verdict and the actual citation trail the
 fact-checker relied on. Schema and the verdict-bucketing methodology
 (True/False/Mixed) are documented in `misinfo_agent/eval/schema.py`.
 
-Currently 98 claims pulled with `scripts/scrape_politifact.py`, in range
-for the 60-100 target but not yet balanced or reviewed: 81 false / 9 mixed
-/ 8 true (82.7% false), and none marked `reviewed: true` yet. `reviewed:
-false` marks entries not yet human-checked; nothing with `reviewed: false`
-should be used for scoring, and the harness's `load_claims()` defaults to
-`reviewed_only=True` (currently an empty set) so this can't happen by
-accident. The skew toward `false` is worth correcting — or at least
-explicitly caveating — before the real batched run, since it otherwise
-mostly tests whether the model says "false," not disconfirming-evidence
-seeking specifically.
+58 claims, all `reviewed: true`, pulled with `scripts/scrape_politifact.py`
+via its `--rating` filter (backfilling `true`/`half-true` specifically
+rather than only ever taking whatever's most recent in the general feed,
+which skewed heavily `false`) and reviewed one-by-one with
+`scripts/review_claims.py` (gitignored — a personal review tool, not
+published methodology). Final split: 19 true / 20 mixed / 19 false —
+genuinely balanced, not just in-range. `reviewed: false` marks entries not
+yet human-checked; nothing with `reviewed: false` should be used for
+scoring, and the harness's `load_claims()` defaults to `reviewed_only=True`
+so this can't happen by accident.
 
 `scripts/scrape_politifact.py` respects `politifact.com/robots.txt`
 (`Crawl-delay: 10`) and is meant for small, occasional seed batches, not
@@ -81,11 +127,11 @@ already done — and a single claim/arm failure is caught and logged rather
 than aborting the batch, since this is meant to run unattended.
 `misinfo_agent/eval/score.py` scores a results file against ground truth:
 accuracy, evidence-seeking rate, cost (steps/tokens), and per-wrong-verdict
-failure attribution (reasoning failure vs. search failure, via domain-level
-matching against the claim's citations).
-
-**The batched run itself is intentionally not done yet** — see the claim
-set skew/review status above.
+failure attribution (`reasoning_failure`, `search_failure`, or
+`incomplete` for an investigation that hit `max_steps` without ever
+submitting a verdict — kept as its own category rather than folded into
+the other two, since a `null` verdict never actually reasoned about
+anything). See Results above for the actual numbers.
 
 ### Fact-checker domain exclusion (and its limit)
 

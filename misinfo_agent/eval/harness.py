@@ -87,3 +87,25 @@ def run_batch(
 def new_run_path(base_dir: Path) -> Path:
     """Generate a new run path for storing results, based on the current date."""
     return Path(base_dir) / f"run_{datetime.now(ZoneInfo('America/Denver')).strftime('%Y_%m_%d_%H:%M:%S')}.jsonl"
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--claims", type=Path, default=Path("misinfo_agent/eval/claims.jsonl"))
+    parser.add_argument("--out-dir", type=Path, default=Path("runs"))
+    parser.add_argument("--arms", nargs="+", default=["agent", "baseline"], choices=list(ARMS))
+    args = parser.parse_args()
+
+    claim_set = load_claims(args.claims)
+    if not claim_set:
+        raise SystemExit(
+            f"No reviewed claims found in {args.claims}. Review some first: "
+            "python scripts/review_claims.py"
+        )
+
+    results_path = new_run_path(args.out_dir)
+    print(f"Running {len(claim_set)} claim(s) x {len(args.arms)} arm(s) -> {results_path}")
+    run_batch(claim_set, results_path, arms=tuple(args.arms))
+    print(f"Done. Results at {results_path}")

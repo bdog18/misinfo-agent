@@ -25,13 +25,14 @@ def _claim(verdict="false", citation_urls=("https://www.cdc.gov/measles/about.ht
     )
 
 
-def _investigation_dict(*, verdict="false", evidence_urls=(), arm="agent") -> dict:
+def _investigation_dict(*, verdict="false", evidence_urls=(), arm="agent", stop_reason="verdict_submitted") -> dict:
     """Build a real Investigation and asdict() it, so the fixture matches
     exactly what harness.py's dataclasses.asdict(investigation) produces —
     not a hand-rolled dict that could drift from the real schema.
     """
     inv = Investigation(claim="The measles vaccine causes autism.", arm=arm, model="claude-sonnet-5")
     inv.verdict = verdict
+    inv.stop_reason = stop_reason
     for i, url in enumerate(evidence_urls):
         inv.add_evidence(
             Evidence(
@@ -88,6 +89,20 @@ def test_attribute_failure_search_failure_when_wrong_and_never_found_the_source(
     assert attribute_failure(inv, claim) == "search_failure"
 
 
+def test_attribute_failure_incomplete_when_max_steps_reached_without_a_verdict():
+    # A None verdict from hitting max_steps is a different failure mode than
+    # a wrong-but-submitted verdict - it should never be silently folded into
+    # reasoning_failure or search_failure just because found_disconfirming_evidence
+    # happens to return True or False for whatever evidence was gathered before
+    # the investigation ran out of steps.
+    claim = _claim(verdict="true", citation_urls=["https://www.cdc.gov/measles/about.html"])
+    inv = _investigation_dict(
+        verdict=None, evidence_urls=["https://cdc.gov/measles/faq.html"], stop_reason="max_steps_reached",
+    )
+
+    assert attribute_failure(inv, claim) == "incomplete"
+
+
 def test_score_investigation_fields():
     claim = _claim(verdict="false", citation_urls=["https://www.cdc.gov/measles/about.html"])
     inv = _investigation_dict(verdict="false", evidence_urls=["https://cdc.gov/measles/faq.html"])
@@ -113,22 +128,25 @@ def test_summarize_aggregates_per_arm():
          "failure_attribution": None, "step_count": 4, "input_tokens": 1000, "output_tokens": 100},
         {"arm": "agent", "correct": False, "sought_disconfirming_evidence": False,
          "failure_attribution": "search_failure", "step_count": 6, "input_tokens": 2000, "output_tokens": 200},
+        {"arm": "agent", "correct": False, "sought_disconfirming_evidence": False,
+         "failure_attribution": "incomplete", "step_count": 15, "input_tokens": 3000, "output_tokens": 300},
         {"arm": "baseline", "correct": True, "sought_disconfirming_evidence": False,
          "failure_attribution": None, "step_count": 2, "input_tokens": 500, "output_tokens": 50},
     ]
 
     summary = summarize(rows)
 
-    assert summary["agent"]["n_claims"] == 2
-    assert summary["agent"]["accuracy"] == 0.5
-    assert summary["agent"]["evidence_seeking_rate"] == 0.5
-    assert summary["agent"]["avg_step_count"] == 5
-    assert summary["agent"]["n_wrong"] == 1
+    assert summary["agent"]["n_claims"] == 3
+    assert summary["agent"]["accuracy"] == 1 / 3
+    assert summary["agent"]["evidence_seeking_rate"] == 1 / 3
+    assert summary["agent"]["n_wrong"] == 2
     assert summary["agent"]["n_search_failure"] == 1
     assert summary["agent"]["n_reasoning_failure"] == 0
+    assert summary["agent"]["n_incomplete"] == 1
 
     assert summary["baseline"]["n_claims"] == 1
     assert summary["baseline"]["accuracy"] == 1.0
+    assert summary["baseline"]["n_incomplete"] == 0
 
 
 def test_score_run_skips_error_records_and_unknown_claims(tmp_path):

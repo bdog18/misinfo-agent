@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Literal
 
 from misinfo_agent import tools
+from misinfo_agent.eval.harness import load_claims
 from misinfo_agent.eval.schema import Claim
 
 
@@ -15,14 +16,25 @@ def found_disconfirming_evidence(investigation: dict, claim: Claim) -> bool:
     return bool(citation_domains & evidence_domains)
 
 
-def attribute_failure(investigation: dict, claim: Claim) -> Literal["reasoning_failure", "search_failure"] | None:
-    """Attribute the failure of an investigation to either reasoning or search."""
+def attribute_failure(
+    investigation: dict, claim: Claim
+) -> Literal["reasoning_failure", "search_failure", "incomplete"] | None:
+    """Attribute a wrong verdict to reasoning, search, or incompleteness.
+
+    "incomplete" (the investigation hit max_steps without ever submitting a
+    verdict) is checked first and kept distinct from reasoning/search
+    failure - a None verdict never actually concluded anything, so labeling
+    it "reasoning_failure" just because it happened to have citation-matching
+    evidence sitting in its list when it ran out of steps would misrepresent
+    what went wrong.
+    """
     if investigation["verdict"] == claim.verdict:
         return None
-    elif found_disconfirming_evidence(investigation, claim):
+    if investigation["stop_reason"] == "max_steps_reached":
+        return "incomplete"
+    if found_disconfirming_evidence(investigation, claim):
         return "reasoning_failure"
-    else:
-        return "search_failure"
+    return "search_failure"
 
 
 def score_investigation(investigation: dict, claim: Claim) -> dict:
@@ -57,6 +69,7 @@ def summarize(rows: list[dict]) -> dict:
             "n_wrong": sum(not row["correct"] for row in arm_rows),
             "n_reasoning_failure": sum(row["failure_attribution"] == "reasoning_failure" for row in arm_rows),
             "n_search_failure": sum(row["failure_attribution"] == "search_failure" for row in arm_rows),
+            "n_incomplete": sum(row["failure_attribution"] == "incomplete" for row in arm_rows),
         }
     return summary
 
@@ -76,3 +89,16 @@ def score_run(results_path: Path, claims: list[Claim]) -> dict:
             
             rows.append(score_investigation(record["investigation"], claim))
     return summarize(rows)
+
+
+if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("results", type=Path, help="path to a harness.py results JSONL file")
+    parser.add_argument("--claims", type=Path, default=Path("misinfo_agent/eval/claims.jsonl"))
+    args = parser.parse_args()
+
+    claim_set = load_claims(args.claims)
+    summary = score_run(args.results, claim_set)
+    print(json.dumps(summary, indent=2))
